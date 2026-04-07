@@ -1,0 +1,10 @@
+name: email-triage-env
+description: AI environment for classifying and handling emails
+version: 1.0
+
+entrypoint: my_env.py
+
+tasks:
+  - easy
+  - medium
+  - hard
