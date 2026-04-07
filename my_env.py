@@ -1,3 +1,34 @@
+Hugging Face's logo
+
+Spaces:
+swara-123
+/
+emai 
+
+like
+0
+
+App
+Files
+Community
+Settings
+emai
+/
+my_env.py
+
+swara-123's picture
+swara-123
+Update my_env.py
+6494b0b
+verified
+raw
+
+Copy download link
+history
+blame
+edit
+delete
+2.47 kB
 from pydantic import BaseModel
 from typing import Tuple, Dict
 import random
@@ -46,14 +77,14 @@ class EmailEnv:
         self.max_steps = 2
         self.correct_label = None
 
-    def reset(self):
+    def reset(self) -> Observation:
         import random
         self.index = random.randint(0, len(self.data)-1)
         self.step_count = 0
         self.correct_label = self.data[self.index][1]
         return Observation(email=self.data[self.index][0])
 
-    def step(self, action):
+    def step(self, action: Action) -> Tuple[Observation, float, bool, Dict]:
         self.step_count += 1
 
         # Step 1: classification
@@ -76,3 +107,10 @@ class EmailEnv:
 
             done = True
             return Observation(email=""), reward, done, {}
+
+
+    def state(self) -> Dict:
+        return {
+            "task": self.task,
+            "step_count": self.step_count
+    }
