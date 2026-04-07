@@ -1,0 +1,14 @@
+[project]
+name = "email-env"
+version = "0.1.0"
+description = "Email classification OpenEnv environment"
+authors = [{name = "Swarali"}]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic"
+]
+
+[tool.openenv]
+entrypoint = "my_env:EmailEnv"
+tasks = ["easy", "medium", "hard"]
