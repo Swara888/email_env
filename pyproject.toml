@@ -6,8 +6,12 @@ authors = [{name = "Swarali"}]
 dependencies = [
     "fastapi",
     "uvicorn",
-    "pydantic"
+    "pydantic",
+    "openenv-core>=0.2.0"
 ]
+
+[project.scripts]
+server = "server.app:app"
 
 [tool.openenv]
 entrypoint = "my_env:EmailEnv"
