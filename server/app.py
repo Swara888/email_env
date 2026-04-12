@@ -1,25 +1,49 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from my_env import EmailEnv, Action
-import uvicorn
 
 app = FastAPI()
 
-env = EmailEnv()
+envs = {}
+
+# ------------------ Models ------------------
+
+class ResetInput(BaseModel):
+    task: str
 
 class StepInput(BaseModel):
     label: str
 
+# ------------------ Routes ------------------
+
+@app.get("/")
+def home():
+    return {"message": "EmailEnv running"}
+
 @app.post("/reset")
-def reset():
-    obs = env.reset()
-    return {"email": obs.email}
+def reset(input: ResetInput):
+
+    if input.task not in ["easy", "medium", "hard"]:
+        return {"error": "Invalid task"}
+
+    envs["current"] = EmailEnv(input.task)
+    obs = envs["current"].reset()
+
+    return {
+        "observation": {"email": obs.email}
+    }
 
 @app.post("/step")
 def step(action: StepInput):
+    env = envs.get("current")
+
+    if not env:
+        return {"error": "Call /reset first"}
+
     obs, reward, done, info = env.step(Action(label=action.label))
+
     return {
-        "email": obs.email,
+        "observation": {"email": obs.email},
         "reward": reward,
         "done": done,
         "info": info
@@ -27,14 +51,4 @@ def step(action: StepInput):
 
 @app.get("/state")
 def state():
-    return {"state": "running"}
-
-
-# ✅ ADD THIS (VERY IMPORTANT)
-def main():
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
-
-
-# ✅ ALSO ADD THIS
-if __name__ == "__main__":
-    main()
+    return {"status": "running"}
