@@ -1,10 +1,33 @@
-name: email-triage-env
-description: AI environment for classifying and handling emails
-version: 1.0
+name: email-env
+description: Email triage environment with uncertainty and multi-step decision making
+version: 0.2.0
 
-entrypoint: my_env.py
+entrypoint: my_env:EmailEnv
 
 tasks:
-  - easy
-  - medium
-  - hard
+  - id: easy
+    description: Detect obvious spam emails
+
+  - id: medium
+    description: Classify standard work-related emails
+
+  - id: hard
+    description: Handle ambiguous and phishing-like emails
+
+actions:
+  type: object
+  properties:
+    label:
+      type: string
+      enum: [spam, important, ignore, reply, urgent]
+
+observations:
+  type: object
+  properties:
+    email:
+      type: string
+
+rewards:
+  type: float
+  minimum: 0.0
+  maximum: 1.0
