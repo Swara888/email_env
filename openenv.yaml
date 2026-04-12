@@ -7,12 +7,10 @@ entrypoint: my_env:EmailEnv
 tasks:
   - id: easy
     description: Detect obvious spam emails
-
   - id: medium
-    description: Classify standard work-related emails
-
+    description: Classify work-related emails
   - id: hard
-    description: Handle ambiguous and phishing-like emails
+    description: Handle ambiguous and phishing emails
 
 actions:
   type: object
