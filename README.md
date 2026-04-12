@@ -41,3 +41,21 @@ The environment runs automatically using Docker and executes `inference.py`.
 
 ## Motivation
 Email overload is a real-world problem. This environment helps train AI agents to triage emails efficiently.
+
+## 🧠 Unique Feature
+
+This environment uses a **2-step decision process**:
+1. Classify the email
+2. Decide the appropriate action
+
+This simulates real-world AI systems used in email platforms.
+
+## 🌍 Real-World Use Case
+
+- Email automation systems
+- Spam filtering
+- Customer support triage
+
+## 🚀 Why This Matters
+
+Unlike simple classifiers, this environment requires reasoning and action selection, making it suitable for training intelligent agents.
