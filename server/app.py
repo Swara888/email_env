@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from my_env import EmailEnv, Action
+from typing import Optional
 
 app = FastAPI()
 
@@ -20,13 +21,19 @@ class StepInput(BaseModel):
 def home():
     return {"message": "EmailEnv running"}
 
+
 @app.post("/reset")
-def reset(input: ResetInput):
+def reset(input: Optional[ResetInput] = None):
 
-    if input.task not in ["easy", "medium", "hard"]:
-        return {"error": "Invalid task"}
+    # ✅ Default task if no input
+    task = "easy"
 
-    envs["current"] = EmailEnv(input.task)
+    if input and input.task:
+        if input.task not in ["easy", "medium", "hard"]:
+            return {"error": "Invalid task"}
+        task = input.task
+
+    envs["current"] = EmailEnv(task)
     obs = envs["current"].reset()
 
     return {
