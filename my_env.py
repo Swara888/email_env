@@ -64,7 +64,7 @@ TASKS = {
         ("Promotion inside!", "spam", 0.7),
         ("Important notice from HR", "important", 0.9),
 
-        # 🔥 Realistic / phishing style
+        # Realistic / phishing
         ("Cl1ck h3re n0w!!!", "spam", 0.95),
         ("Your bank account is locked! Click link now", "spam", 0.95),
         ("URGENT: verify your account immediately", "spam", 0.9),
@@ -82,24 +82,43 @@ class EmailEnv:
         self.max_steps = 2
         self.correct_label = None
         self.confidence = 1.0
+        self.first_action = None  # 🔥 memory
 
     def reset(self) -> Observation:
         self.index = random.randint(0, len(self.data) - 1)
         self.step_count = 0
 
         email, label, confidence = self.data[self.index]
+
+        # 🔥 Dynamic variation (VERY IMPORTANT)
+        variations = [
+            email,
+            email.upper(),
+            email + " !!!",
+            email.replace("o", "0"),
+            "URGENT: " + email,
+            email + " please respond ASAP"
+        ]
+        email = random.choice(variations)
+
         self.correct_label = label
         self.confidence = confidence
+        self.first_action = None
 
         return Observation(email=email)
 
     def step(self, action: Action) -> Tuple[Observation, float, bool, Dict]:
+
+        # ✅ invalid action handling
         if action.label not in ["spam", "important", "ignore", "reply", "urgent"]:
             return Observation(email="Invalid action"), 0.0, True, {}
+
         self.step_count += 1
 
-        # Step 1: classification with confidence
+        # Step 1: classification
         if self.step_count == 1:
+            self.first_action = action.label
+
             if action.label == self.correct_label:
                 reward = 0.5 * self.confidence
             else:
@@ -107,9 +126,13 @@ class EmailEnv:
 
             return Observation(email="Decide action: reply / ignore / urgent"), reward, False, {}
 
-        # Step 2: action decision
+        # Step 2: action decision with memory
         elif self.step_count == 2:
-            if self.correct_label == "important" and action.label in ["reply", "urgent"]:
+
+            if self.first_action != self.correct_label:
+                reward = 0.0  # penalty if first step wrong
+
+            elif self.correct_label == "important" and action.label in ["reply", "urgent"]:
                 reward = 0.5
             elif self.correct_label == "spam" and action.label == "ignore":
                 reward = 0.5
