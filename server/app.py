@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from my_env import EmailEnv, Action
 from typing import Optional
+import uvicorn
+
 
 app = FastAPI()
 
@@ -59,3 +61,14 @@ def step(action: StepInput):
 @app.get("/state")
 def state():
     return {"status": "running"}
+
+
+
+# REQUIRED for OpenEnv validator
+def main():
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+
+
+
+if __name__ == "__main__":
+    main()
